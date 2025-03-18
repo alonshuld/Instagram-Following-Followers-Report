@@ -2,6 +2,8 @@
 
 A simple web tool that helps you see who doesn't follow you back on Instagram.
 
+**Try it now: [Instagram Following & Followers Report](https://alonshuld.github.io/Instagram-Following-Followers-Report/)**
+
 ## What this tool does
 
 This app lets you:
@@ -31,6 +33,10 @@ This app lets you:
 ## Privacy
 
 Your data stays on your device. Nothing is uploaded to any server or stored anywhere.
+
+## Online Version
+
+You can access the tool online at: [https://alonshuld.github.io/Instagram-Following-Followers-Report/](https://alonshuld.github.io/Instagram-Following-Followers-Report/)
 
 ## About
 
