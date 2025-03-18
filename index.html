@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Followers Analyzer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --instagram-purple: #8a3ab9;
+            --instagram-pink: #e95950;
+            --instagram-blue: #4f5bd5;
+            --dark-bg: #121212;
+            --light-text: #f1f1f1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a1a, #232323);
+            color: var(--light-text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 3rem;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .logo {
+            width: 180px;
+            margin-bottom: 1rem;
+        }
+
+        .screen {
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+            flex: 1;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: white;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(to right, var(--instagram-purple), var(--instagram-pink), var(--instagram-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        h2 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            color: #e1e1e1;
+            margin: 1.5rem 0 0.5rem 0;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        button {
+            background: linear-gradient(45deg, var(--instagram-purple), var(--instagram-pink));
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(138, 58, 185, 0.3);
+            margin-top: 1rem;
+            width: auto;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(138, 58, 185, 0.4);
+        }
+
+        button i {
+            margin-right: 0.5rem;
+        }
+
+        .step {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--instagram-pink);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--instagram-purple), var(--instagram-pink));
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .step h3 {
+            display: flex;
+            align-items: center;
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .upload-container {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--instagram-purple);
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            cursor: pointer;
+            transition: border-color 0.3s ease, background 0.3s ease;
+        }
+
+        /* Ensure both icons start as purple */
+        .upload-area i {
+            font-size: 2rem;
+            color: var(--instagram-purple) !important; /* Force purple as default */
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        /* On hover, change border and icon color to pink */
+        .upload-area:hover {
+            border-color: var(--instagram-pink);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .upload-area:hover i {
+            color: var(--instagram-pink) !important; /* Force pink on hover */
+        }
+
+        .file-info {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+
+        .file-name {
+            font-size: 0.9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 200px;
+        }
+
+        .file-label {
+            color: var(--instagram-pink);
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        li a {
+            color: var(--light-text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        li a:hover {
+            color: var(--instagram-pink);
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--instagram-purple), var(--instagram-pink));
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 1rem 0;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .made-by {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .made-by a {
+            background: linear-gradient(to right, var(--instagram-purple), var(--instagram-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .made-by a:hover {
+            text-shadow: 0 0 10px rgba(233, 89, 80, 0.5);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .results-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 2rem 0;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            width: 48%;
+            animation: fadeIn 0.8s ease-in-out;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(138, 58, 185, 0.2);
+        }
+
+        .stat-box.active {
+            border: 2px solid var(--instagram-pink);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+            background: linear-gradient(to right, var(--instagram-purple), var(--instagram-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .screenshot {
+            max-width: 100%;
+            border-radius: 8px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            margin: 1rem 0;
+        }
+
+        .loader {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+        }
+
+        .loader-circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--instagram-purple), var(--instagram-pink));
+            animation: loaderAnim 1s ease-in-out infinite;
+            margin: 0 5px;
+        }
+
+        .loader-circle:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loader-circle:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .results-container {
+            display: none;
+        }
+
+        .results-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .toggle-switch {
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        @keyframes loaderAnim {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .step {
+                padding: 1rem;
+            }
+            
+            .results-stats {
+                flex-direction: column;
+            }
+            
+            .stat-box {
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <svg class="logo" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="instagramGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#8a3ab9" />
+                        <stop offset="50%" stop-color="#e95950" />
+                        <stop offset="100%" stop-color="#fccc63" />
+                    </linearGradient>
+                </defs>
+                <path fill="url(#instagramGradient)" d="M256 46.5c-57.1 0-64.2.2-86.7 1.3-22.4 1-37.7 4.6-51.1 9.8-13.9 5.4-25.6 12.5-37.3 24.2s-18.9 23.4-24.2 37.3c-5.2 13.4-8.8 28.7-9.8 51.1-1.1 22.5-1.3 29.6-1.3 86.7s.2 64.2 1.3 86.7c1 22.4 4.6 37.7 9.8 51.1 5.4 13.9 12.5 25.6 24.2 37.3 11.7 11.7 23.4 18.9 37.3 24.2 13.4 5.2 28.7 8.8 51.1 9.8 22.5 1.1 29.6 1.3 86.7 1.3s64.2-.2 86.7-1.3c22.4-1 37.7-4.6 51.1-9.8 13.9-5.4 25.6-12.5 37.3-24.2 11.7-11.7 18.9-23.4 24.2-37.3 5.2-13.4 8.8-28.7 9.8-51.1 1.1-22.5 1.3-29.6 1.3-86.7s-.2-64.2-1.3-86.7c-1-22.4-4.6-37.7-9.8-51.1-5.4-13.9-12.5-25.6-24.2-37.3-11.7-11.7-23.4-18.9-37.3-24.2-13.4-5.2-28.7-8.8-51.1-9.8-22.5-1.1-29.6-1.3-86.7-1.3zm0 37.9c56.1 0 62.8.2 85 1.3 20.5.9 31.6 4.4 39 7.2 9.8 3.8 16.8 8.4 24.2 15.7 7.4 7.4 11.9 14.4 15.7 24.2 2.9 7.4 6.3 18.5 7.2 39 1.1 22.2 1.3 28.9 1.3 85s-.2 62.8-1.3 85c-.9 20.5-4.4 31.6-7.2 39-3.8 9.8-8.4 16.8-15.7 24.2-7.4 7.4-14.4 11.9-24.2 15.7-7.4 2.9-18.5 6.3-39 7.2-22.2 1.1-28.9 1.3-85 1.3s-62.8-.2-85-1.3c-20.5-.9-31.6-4.4-39-7.2-9.8-3.8-16.8-8.4-24.2-15.7-7.4-7.4-11.9-14.4-15.7-24.2-2.9-7.4-6.3-18.5-7.2-39-1.1-22.2-1.3-28.9-1.3-85s.2-62.8 1.3-85c.9-20.5 4.4-31.6 7.2-39 3.8-9.8 8.4-16.8 15.7-24.2 7.4-7.4 14.4-11.9 24.2-15.7 7.4-2.9 18.5-6.3 39-7.2 22.2-1.1 28.9-1.3 85-1.3z"/>
+                <path fill="url(#instagramGradient)" d="M256 341.3c-47.1 0-85.3-38.2-85.3-85.3s38.2-85.3 85.3-85.3 85.3 38.2 85.3 85.3-38.2 85.3-85.3 85.3zm0-216.8c-72.6 0-131.5 58.9-131.5 131.5s58.9 131.5 131.5 131.5 131.5-58.9 131.5-131.5-58.9-131.5-131.5-131.5zm168.1-10.3c0 17-13.8 30.7-30.7 30.7-17 0-30.7-13.8-30.7-30.7 0-17 13.8-30.7 30.7-30.7 17-.1 30.7 13.7 30.7 30.7z"/>
+            </svg>
+        </header>
+
+        <div id="instructions-screen" class="screen active">
+            <h1>Instagram Following & Followers Report</h1>
+            <p>Discover your Instagram relationship insights - see who doesn't follow you back and who you haven't followed back with just a few clicks.</p>
+            
+            <div class="step">
+                <h3><span class="step-number">1</span> Download your Instagram data</h3>
+                <p>Log into your Instagram account and request a download of your data:</p>
+                <ul>
+                    <li>• Go to Instagram Settings → Account Center → Your Information and Permissions</li>
+                    <li>• Choose Download Your Information → Choose your Instagram account</li>
+                    <li>• Select Some of your information → In connection choose Following and Followers</li>
+                    <li>• Click Download to device → Data range choose All time → Press Create files</li>
+                    <li>• You'll receive an email with a download link within minutes</li>
+                </ul>
+            </div>
+            
+            <div class="step">
+                <h3><span class="step-number">2</span> Extract the HTML files</h3>
+                <p>After downloading, extract the ZIP file and locate these two files:</p>
+                <ul>
+                    <li><strong>followers.html</strong> - Contains list of people who follow you</li>
+                    <li><strong>following.html</strong> - Contains list of people you follow</li>
+                </ul>
+            </div>
+            
+            <div class="step">
+                <h3><span class="step-number">3</span> Upload and analyze</h3>
+                <p>Upload both files to our analyzer and get instant results. Your data never leaves your browser and is not stored anywhere.</p>
+            </div>
+            
+            <button id="continue-btn" onclick="showScreen('upload-screen')">
+                <i class="fas fa-arrow-right"></i> Continue to Upload
+            </button>
+        </div>
+
+        <div id="upload-screen" class="screen">
+            <h1>Upload Your Instagram Data</h1>
+            <p>Select both HTML files to compare your followers and following lists.</p>
+            
+            <div class="upload-container">
+                <div class="file-info">
+                    <span class="file-label">Followers:</span>
+                    <span id="followers-name" class="file-name">No file selected</span>
+                </div>
+                <label for="followers" class="upload-area">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--instagram-purple); margin-bottom: 1rem;"></i>
+                    <p>Click to select or drag followers.html here</p>
+                    <input type="file" id="followers" accept=".html" onchange="updateFileName(this, 'followers-name')">
+                </label>
+                
+                <div class="file-info">
+                    <span class="file-label">Following:</span>
+                    <span id="following-name" class="file-name">No file selected</span>
+                </div>
+                <label for="following" class="upload-area">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--instagram-pink); margin-bottom: 1rem;"></i>
+                    <p>Click to select or drag following.html here</p>
+                    <input type="file" id="following" accept=".html" onchange="updateFileName(this, 'following-name')">
+                </label>
+                
+                <button id="analyze-btn" onclick="startAnalysis()">
+                    <i class="fas fa-search"></i> Analyze Relationships
+                </button>
+            </div>
+            
+            <div id="loader" class="loader">
+                <div class="loader-circle"></div>
+                <div class="loader-circle"></div>
+                <div class="loader-circle"></div>
+            </div>
+            
+            <button onclick="showScreen('instructions-screen')" style="background: transparent; box-shadow: none; margin-top: 2rem;">
+                <i class="fas fa-arrow-left"></i> Back to Instructions
+            </button>
+        </div>
+
+        <div id="results-screen" class="screen">
+            <h1>Instagram Following & Followers Report</h1>
+            
+            <div class="results-stats">
+                <div id="not-following-box" class="stat-box active" onclick="switchResultView('not-following')">
+                    <div class="stat-label">People Not Following You</div>
+                    <div id="not-following-count" class="stat-number">0</div>
+                    <div class="stat-label">Click to view</div>
+                </div>
+                <div id="not-followed-box" class="stat-box" onclick="switchResultView('not-followed')">
+                    <div class="stat-label">People You Don't Follow</div>
+                    <div id="not-followed-count" class="stat-number">0</div>
+                    <div class="stat-label">Click to view</div>
+                </div>
+            </div>
+            
+            <div id="not-following-results" class="results-container active"></div>
+            <div id="not-followed-results" class="results-container"></div>
+            
+            <button onclick="showScreen('upload-screen')" style="margin-top: 2rem;">
+                <i class="fas fa-redo"></i> Analyze Another Account
+            </button>
+        </div>
+
+        <footer>
+            <div class="made-by">
+                Made with <i class="fas fa-heart" style="color: var(--instagram-pink);"></i> by 
+                <a href="https://www.instagram.com/alonshuld" target="_blank">@alonshuld</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Show different screens
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Update file name display
+        function updateFileName(input, elementId) {
+            const fileName = input.files[0] ? input.files[0].name : 'No file selected';
+            document.getElementById(elementId).textContent = fileName;
+        }
+
+        // Start analysis with animation
+        function startAnalysis() {
+            const followersFile = document.getElementById('followers').files[0];
+            const followingFile = document.getElementById('following').files[0];
+            
+            if (!followersFile || !followingFile) {
+                alert('Please select both HTML files.');
+                return;
+            }
+            
+            document.getElementById('loader').style.display = 'flex';
+            document.getElementById('analyze-btn').disabled = true;
+            
+            // Add a delay to show the loading animation
+            setTimeout(() => {
+                compareInstagram();
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('analyze-btn').disabled = false;
+                showScreen('results-screen');
+            }, 1500);
+        }
+
+        // Switch between result views
+        function switchResultView(view) {
+            // Update active stat box
+            document.querySelectorAll('.stat-box').forEach(box => {
+                box.classList.remove('active');
+            });
+            document.getElementById(`${view}-box`).classList.add('active');
+            
+            // Update active results container
+            document.querySelectorAll('.results-container').forEach(container => {
+                container.classList.remove('active');
+            });
+            document.getElementById(`${view}-results`).classList.add('active');
+        }
+
+        function compareInstagram() {
+            const followersFile = document.getElementById('followers').files[0];
+            const followingFile = document.getElementById('following').files[0];
+
+            if (!followersFile || !followingFile) {
+                alert('Please select both HTML files.');
+                return;
+            }
+
+            const reader1 = new FileReader();
+            const reader2 = new FileReader();
+
+            reader1.onload = function(event) {
+                const followersHTML = event.target.result;
+                reader2.onload = function(event) {
+                    const followingHTML = event.target.result;
+                    const followers = extractUsernames(followersHTML);
+                    const following = extractUsernames(followingHTML);
+                    displayDifferences(followers, following);
+                };
+                reader2.readAsText(followingFile);
+            };
+            reader1.readAsText(followersFile);
+        }
+
+        function extractUsernames(html) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const links = doc.querySelectorAll('a');
+            const usernames = new Set();
+
+            links.forEach(link => {
+                const url = link.href;
+                // Extract username from URL if it follows the pattern "https://www.instagram.com/username"
+                if (url.includes('https://www.instagram.com/')) {
+                    const username = url.split('https://www.instagram.com/')[1].replace('/', '');
+                    usernames.add(username.trim());
+                }
+            });
+
+            return usernames;
+        }
+
+        function displayDifferences(followers, following) {
+            const notFollowingBack = [...following].filter(user => !followers.has(user));
+            const notFollowedBack = [...followers].filter(user => !following.has(user));
+            
+            // Update the stats counters with animation
+            animateCounter('not-following-count', notFollowingBack.length);
+            animateCounter('not-followed-count', notFollowedBack.length);
+
+            // Display users who don't follow you back
+            const notFollowingResults = document.getElementById('not-following-results');
+            let notFollowingOutput = '<h3>People you follow but who do not follow you back:</h3>';
+            notFollowingOutput += notFollowingBack.length ? createEnhancedLinksList(notFollowingBack) : '<p>None - everyone you follow is following you back! 🎉</p>';
+            notFollowingResults.innerHTML = notFollowingOutput;
+            
+            // Display users you don't follow back
+            const notFollowedResults = document.getElementById('not-followed-results');
+            let notFollowedOutput = '<h3>People who follow you but you do not follow back:</h3>';
+            notFollowedOutput += notFollowedBack.length ? createEnhancedLinksList(notFollowedBack) : '<p>None - you follow everyone who follows you! 🎉</p>';
+            notFollowedResults.innerHTML = notFollowedOutput;
+        }
+
+        function createEnhancedLinksList(usernames) {
+            return `<ul>${usernames.map((username, index) => 
+                `<li style="animation: fadeIn ${0.1 + index * 0.05}s ease-in-out;">
+                    <a href="https://www.instagram.com/${username}" target="_blank">
+                        <div class="user-avatar">${username.charAt(0).toUpperCase()}</div>
+                        ${username}
+                    </a>
+                </li>`).join('')}</ul>`;
+        }
+
+        function animateCounter(elementId, targetValue) {
+            const element = document.getElementById(elementId);
+            const duration = 1500; // Animation duration in milliseconds
+            const stepTime = 30; // Time between steps in milliseconds
+            const startValue = 0;
+            const steps = Math.floor(duration / stepTime);
+            const increment = (targetValue - startValue) / steps;
+            let currentValue = startValue;
+            let currentStep = 0;
+
+            const interval = setInterval(() => {
+                currentStep++;
+                currentValue += increment;
+                
+                if (currentStep >= steps) {
+                    clearInterval(interval);
+                    element.textContent = targetValue;
+                } else {
+                    element.textContent = Math.floor(currentValue);
+                }
+            }, stepTime);
+        }
+
+        // Add drag and drop functionality
+        document.querySelectorAll('.upload-area').forEach(uploadArea => {
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'var(--instagram-pink)';
+                uploadArea.style.background = 'rgba(255, 255, 255, 0.05)';
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.borderColor = 'var(--instagram-purple)';
+                uploadArea.style.background = 'transparent';
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'var(--instagram-purple)';
+                uploadArea.style.background = 'transparent';
+                
+                const input = uploadArea.querySelector('input[type="file"]');
+                const nameDisplay = document.getElementById(input.id + '-name');
+                
+                if (e.dataTransfer.files.length) {
+                    input.files = e.dataTransfer.files;
+                    nameDisplay.textContent = e.dataTransfer.files[0].name;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
